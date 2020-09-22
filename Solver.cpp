@@ -12,7 +12,7 @@
 
 using namespace std;
 
-
+//Example sudokus to solve
 int problem1[N][N] = {
    {3, 0, 6, 5, 0, 8, 4, 0, 0},
    {5, 2, 0, 0, 0, 0, 0, 0, 0},
@@ -99,7 +99,6 @@ void printCoords(array<vector<pair<int, int>>,9> coords)
         }
     }
 }
-
 
 //Functions to preprocess the sudoku problem into array filled with random 
 //values, where each block has unique 'unfixed' values 1-9,
@@ -275,6 +274,7 @@ int countMissing(unordered_set<int> s, int low, int high)
 { 
     int m = 0;
     for (int x = low; x <= high; x++) 
+        //cout << "x is"<<x<<endl;
         if (s.find(x) == s.end()) 
             m++;
     return m;
@@ -286,14 +286,10 @@ int rowScore(int sudoku[N][3][3],int n,int j)
     unordered_set<int> set;
     int index = n/3;
     for(int i=3*index;i<3*index+3;i++)
-    {
         for(int k=0;k<3;k++)
-        {
             set.insert(sudoku[i][j][k]);
-        }
-    }
     score = countMissing(set,1,9);
-    set.erase(set.begin(),set.end());
+    //set.erase(set.begin(),set.end());
     return score;
 }
 int collumnScore(int sudoku[N][3][3],int n,int i)
@@ -303,14 +299,10 @@ int collumnScore(int sudoku[N][3][3],int n,int i)
     unordered_set<int> set;
     int start_index = n%3;
     for(int j=0;j<3;j++)
-        {
             for(int k=0;k<3;k++)
-            {
                 set.insert(sudoku[start_index+3*j][k][i]);
-            }
-        }
     score = countMissing(set,1,9);
-    set.erase(set.begin(),set.end());
+    //set.erase(set.begin(),set.end());
     return score;
 }
 int scoreBoard(int sudoku[N][3][3])
@@ -333,7 +325,8 @@ template<class bidiiter>
 //fisher-yates shuffle- used to pick two random elements from coords list.
 bidiiter random_unique(bidiiter begin, bidiiter end, size_t n) {
     size_t left = std::distance(begin, end);
-    while (n--) {
+    while (n--) 
+    {
         bidiiter r = begin;
         advance(r, rand()%left);
         swap(*begin, *r);
@@ -370,13 +363,12 @@ float costFunction(int deltaScore,float T)
     float prob = 1000/(1+exp(deltaScore/T));
     return prob;
 }
-
 int permutations(int sudoku[N][3][3],array<vector<pair<int, int>>,9> coords,
         int initialScore,float T,bool &improved)
 {
     int n = rand() % 9; //choose random block
     random_unique(coords[n].begin(),coords[n].end(),2); //choose two random coordiantes of elements in block
-    vector <pair<int,int>> indexes = {coords[n].begin(),coords[n].end()}; //problem was here
+    vector <pair<int,int>> indexes = {coords[n].begin(),coords[n].end()};
     int deltaScore = -scorer(sudoku,indexes,n); //calc. score before flip
     swapper(sudoku,indexes,n); //flip elements
     deltaScore += scorer(sudoku,indexes,n); //calc. score change after flip
@@ -403,14 +395,12 @@ int permutations(int sudoku[N][3][3],array<vector<pair<int, int>>,9> coords,
             }
     }
 }
-
 float coolingFunc(float T, float a)
-//Function describes cooling schedule of T each iteration.
+//Function describes cooling schedule of T after each iteration.
 {
     T = T-T*a;
     return T;
 }
-
 void Annealer(int sudoku[N][3][3],array<vector<pair<int, int>>,9> coords,int score,
                     float T0,float endT,float a)
 //Main loop for Simulated Annealing
@@ -436,13 +426,9 @@ void Annealer(int sudoku[N][3][3],array<vector<pair<int, int>>,9> coords,int sco
 
         //reset/increase reheat score
         if(improved==false)
-            {
                 reheatCount++;
-            }
-        else if(improved==true)
-            {
+        else
                 reheatCount = 0;
-            }
         //testScore=score;
 
         //Advance Temp using coolingFunc
@@ -471,48 +457,123 @@ void Annealer(int sudoku[N][3][3],array<vector<pair<int, int>>,9> coords,int sco
     return ;
 }
 
-void preProcess(int problem[N][N],int sudoku[N][3][3],array<vector<pair<int, int>>,9> &coords)
+//Functions to check problem is valid for solving
+int countRepeats(vector<int> vec)
+//Count number of repeats in a vector
+{
+    sort(vec.begin(), vec.end());
+    int l1 = vec.size();
+    vec.erase( unique( vec.begin(), vec.end() ), vec.end() );
+    int score =  l1-vec.size();
+    return score;
+}
+bool checkValidity(int sudoku[N][3][3])
+    //Check the problem has no fixed repeats in a row, collumn or a block 
+    //and contains only numbers in range 1-9
+{
+    int n=0;
+    int score =0;
+    vector<int> vec;
+    for(int n=0;n<N;n++)
+    {
+        int index = n/3;
+        for(int j=0;j<3;j++)
+        {
+            for(int i=3*index;i<3*index+3;i++)
+                for(int k=0;k<3;k++)
+                    if(sudoku[i][j][k]>=1 && sudoku[i][j][k]<=9)
+                        vec.push_back(sudoku[i][j][k]);
+                    else if(sudoku[i][j][k]!=0)
+                    {
+                        cout << "Not Valid! Not allowed value of "<<sudoku[i][j][k]
+                                    << " in block number "<< i<<endl;
+                        return false; 
+                    }
+            score += countRepeats(vec);
+            if(score>0)
+            {
+                cout<<"Not Valid! Repeated value in row num "<< j
+                            <<" along block num "<< n<<endl;;
+                return false;
+            }
+            vec.clear();
+        }
+        int start_index = n%3;
+        for(int o=0;o<3;o++)
+        {
+            for(int p=0;p<3;p++)
+                for(int q=0;q<3;q++)
+                    if(sudoku[start_index+3*p][q][o] !=0)
+                        vec.push_back(sudoku[start_index+3*p][q][o]);
+            score += countRepeats(vec);
+            if(score>0)
+            {
+                cout<<"Not Valid! Repeated value in collumn num "<< o
+                            <<" along block num "<< n <<endl;;
+                return false;
+            }
+            vec.clear();
+        }
+        for(int r=0;r<3;r++)
+            for(int s=0;s<3;s++)
+                if(sudoku[n][r][s] !=0)
+                    vec.push_back(sudoku[n][r][s]);
+        score += countRepeats(vec);
+        if(score>0)
+        {
+            cout<<"Not Valid! Repeated value in block num "<< n << endl;
+            return false;
+        }
+        vec.clear();
+    }
+    return true;
+}
+
+bool preProcess(int problem[N][N],int sudoku[N][3][3],array<vector<pair<int, int>>,9> &coords)
 // Preprocess the problem and check validity
 {
     int fixedValues[N][3][3];
     blockSelect(problem4,sudoku,fixedValues);
-    int testscore = scoreBoard(sudoku);
-    cout << "testing score is" << testscore;
-    //print problem
-    cout << "Problem to be solved:" << endl;
-    printSudoku(sudoku);
-    //fill each sudoku block with numbers 1-9
-    fillBlocks(sudoku,fixedValues);
-    //store coordinates of unfixed coordinates as array (for each block 1-9) 
-    //of vectors of each coordiante pair
-    unfixedCoords(fixedValues,coords);    
-    return ;
+
+    bool test;
+    test = checkValidity(sudoku);
+
+    if(test==true)
+    {
+        cout << "Problem to be solved:" << endl;
+        printSudoku(sudoku);
+        //fill each sudoku block with numbers 1-9
+        fillBlocks(sudoku,fixedValues);
+        //store coordinates of unfixed coordinates as array (for each block 1-9) 
+        //of vectors of each coordiante pair
+        unfixedCoords(fixedValues,coords);  
+        return true;
+    }
+    return false;
 }
 
 int main()
 {
-    //form sudoku array and preprocess it for main algorithm
+    //preprocess array and check it is a valid problem
     int sudoku[N][3][3];
     array<vector<pair<int, int>>,9> coords;
-    preProcess(problem4,sudoku,coords);
+    bool valid;
+    
+    //Input problem to be solved here
+    valid = preProcess(problem4,sudoku,coords);
+    if(valid==false)
+        return 0;
 
     //Cooling Parameters
     float T = 2;
     float endT = 0.001;
     float a = 1e-3;
-    
-    //Print the 'starting score' of the board
-    int score = scoreBoard(sudoku);
-    cout << "starting score is " << score <<endl;
 
+    int score = scoreBoard(sudoku); //board starting score
     //Run annealing algorithm and time
     const clock_t begin_time = clock();
     Annealer(sudoku,coords,score,T,endT,a);   
     cout << "Time taken = "<< float( clock () - begin_time ) /  CLOCKS_PER_SEC <<" seconds";
-
-    //TODO 'check functions'.
-    //TODO? try adding a second 'nearest neighbour' array, rather than swapping back, does this improve performance?
-
 }
 
 
