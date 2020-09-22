@@ -407,13 +407,12 @@ void Annealer(int sudoku[N][3][3],array<vector<pair<int, int>>,9> coords,int sco
 {
     int count = 0;
     float T = T0;
-    bool improved; //did previous iteration improve score
-    //int testScore= score;   
+    bool improved; //did previous iteration improve score  
     int reheatCount = 0;    //count successive times score doesn't increase
     while(T>endT && count<1e6)
     {
         if(reheatCount==1e4)
-        //If score doesn't improve after 1000 iterations, return temp to T0
+        //If score doesn't improve after 10000 iterations, return temp to T0
         //(helps avoid being stuck at local minima)
         {
             T = T0;
@@ -429,7 +428,6 @@ void Annealer(int sudoku[N][3][3],array<vector<pair<int, int>>,9> coords,int sco
                 reheatCount++;
         else
                 reheatCount = 0;
-        //testScore=score;
 
         //Advance Temp using coolingFunc
         T =coolingFunc(T,a);
@@ -453,7 +451,7 @@ void Annealer(int sudoku[N][3][3],array<vector<pair<int, int>>,9> coords,int sco
     //If loop ends without reaching score=0, print final iteration sudoku/score
     printSudoku(sudoku);
     cout << "no solution found, count was"<< count<<endl;
-    cout << "final score"<< score << endl;
+    cout << "final score = "<< score << endl;
     return ;
 }
 
@@ -558,7 +556,7 @@ int main()
     int sudoku[N][3][3];
     array<vector<pair<int, int>>,9> coords;
     bool valid;
-    
+
     //Input problem to be solved here
     valid = preProcess(problem4,sudoku,coords);
     if(valid==false)
