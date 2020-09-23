@@ -12,7 +12,7 @@ Example of a simulated annealing solver written in C++. I used this project as a
      &nbsp; &nbsp;  else if score doesn't improve use probablilty dist. P=1/(1+e^(score_diff/T)) where T is the global temperature parameter:  
      &nbsp;  &nbsp;  &nbsp;  &nbsp;  if random U[0,1] < P accept new state, else reject.  
 5) Lower the global temp T after each iteration.  
-6) If score doesn't improve a set number of times, 'reheat' by returning T to start Temp.  
+6) If score doesn't improve a set number of times, 'reheat' by returning T to start temp.  
 
 # Code/algorithm optimisation 
 The most important steps for improving runtime are; selecting the random elements to switch, and computing the new score:  
