@@ -17,7 +17,7 @@ Example of a simulated annealing solver written in C++. I used this project as a
 # Code/algorithm optimisation 
 The most important steps for improving runtime are; selecting the random elements to switch, and computing the new score:  
 1) To select random elements the main problem is stored as an array for fast access. The coordinates of movable elements are stored as an array of vector pairs. The program can access the set of coordiantes for each block quickly, a fischer yates shuffle is then used to pull two sets of coordiantes from the vector.  
-2) The scoring process is slightly optimised by only computing the score change in the rows/collumns being changed. Further, if the two elements are in the same row or collumn then that score is not calculated.
+2) The scoring process is slightly optimised by only computing the score change in the rows/collumns being changed. Further, if the two elements are in the same row or collumn then that row/collumn's score is not calculated.
 
 # Performance
 The implementation has been tested on a handful of puzzles of varying complexity. It has so far performed well on puzzles even those with very few clues, taking around 0.1-0.4s to find a solution (running on an i5 2.7Ghz macbook). Occasionally the solver would end up stuck in a large local minima and successively fail to improve the score, to solve this 'reheating' was implemented.
