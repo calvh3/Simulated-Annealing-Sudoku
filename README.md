@@ -8,9 +8,9 @@ Example of a simulated annealing solver written in C++. I used this project as a
 2) The problem state is scored by counting the number of repeats in each row and each collumn: iff puzzle is solved, score=0.  
 3) We create a new problem state by randomly selecting a block, and randomly swapping two of the unfixed elements (not clues).   
 4) Score the new state and find the difference with old score;  
-     &nbsp;  if the score improves accept the new state.  
-     &nbsp;  else if score doesn't improve use probablilty dist. P=1/(1+e^(score_diff/T)) where T is the global temperature parameter: 
-     &nbsp;  if random U[0,1] < P accept new state, else reject.  
+     &nbsp; &nbsp;  if the score improves accept the new state.  
+     &nbsp; &nbsp;  else if score doesn't improve use probablilty dist. P=1/(1+e^(score_diff/T)) where T is the global temperature parameter:  
+     &nbsp;  &nbsp;  &nbsp;  &nbsp;  if random U[0,1] < P accept new state, else reject.  
 5) Lower the global temp T after each iteration.  
 6) If score doesn't improve a set number of times, 'reheat' by returning T to start Temp.  
 
