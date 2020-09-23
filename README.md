@@ -7,7 +7,7 @@ Example of a simulated annealing solver written in C++. I used this project as a
 1) Fill out each sub-square 'block', with random numbers such that each is a subsolution (contains numbers 1-9 only).  
 2) The problem state is scored by counting the number of repeats in each row and each collumn (score=0 iff puzzle is solved).  
 Begin loop:
-3) Create a new problem state by randomly selecting a block, and randomly swapping two of the unfixed elements (not clues).   
+3) Create a new problem state by randomly selecting a block, then randomly swapping two of the unfixed elements (not clues).   
 4) Score the new state and find the difference with old score;  
      &nbsp; &nbsp;  if the score improves accept the new state.  
      &nbsp; &nbsp;  else if score doesn't improve use probablilty dist. P=1/(1+e^(score_diff/T)) where T is the global temperature parameter:  
