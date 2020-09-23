@@ -180,6 +180,20 @@ int removeAt(vector<int>& vec, int n)
     vec.pop_back();
     return value;
 }
+void zeroCheck(int blockFixedValues[3][3],vector<int>& vec)
+//Fill vector with the coordinates of the fixed entries (ones)
+{
+    for(int k=0;k<3;k++)
+    {
+        for(int l=0;l<3;l++)
+        {   
+            if(blockFixedValues[k][l]==0){
+                vec.push_back(k);
+                vec.push_back(l);
+            }else{}
+        }
+    }
+}
 void blockFiller(int block[3][3],vector <int>& missing,vector<int>& indexes)
 //recursively fill a block with random numbers supplied- so that each block 
 //contains set [1,9].
@@ -203,20 +217,6 @@ void blockFiller(int block[3][3],vector <int>& missing,vector<int>& indexes)
         block[i][j] = v;
         blockFiller(block,missing,indexes);
         return;
-    }
-}
-void zeroCheck(int blockFixedValues[3][3],vector<int>& vec)
-//Fill vector with the coordinates of the fixed entries (ones)
-{
-    for(int k=0;k<3;k++)
-    {
-        for(int l=0;l<3;l++)
-        {   
-            if(blockFixedValues[k][l]==0){
-                vec.push_back(k);
-                vec.push_back(l);
-            }else{}
-        }
     }
 }
 void fillBlocks(int sudoku[N][3][3],int fixedValues[N][3][3])
@@ -266,7 +266,6 @@ void unfixedCoords(int fixedValues[N][3][3],array<vector<pair<int, int>>,9> &coo
 }
 
 
-
 //Functions to compute the score of the sudoku value
 //Score is defined as number of repeats in each collumn/row.
 int countMissing(unordered_set<int> s, int low, int high) 
@@ -274,13 +273,12 @@ int countMissing(unordered_set<int> s, int low, int high)
 { 
     int m = 0;
     for (int x = low; x <= high; x++) 
-        //cout << "x is"<<x<<endl;
         if (s.find(x) == s.end()) 
             m++;
     return m;
 } 
 int rowScore(int sudoku[N][3][3],int n,int j)
-//computes score along row given by elements [n][j][*]
+//Computes score along row given by elements [n][j][*]
 {
     int score = 0;
     unordered_set<int> set;
@@ -289,7 +287,6 @@ int rowScore(int sudoku[N][3][3],int n,int j)
         for(int k=0;k<3;k++)
             set.insert(sudoku[i][j][k]);
     score = countMissing(set,1,9);
-    //set.erase(set.begin(),set.end());
     return score;
 }
 int collumnScore(int sudoku[N][3][3],int n,int i)
@@ -302,7 +299,6 @@ int collumnScore(int sudoku[N][3][3],int n,int i)
             for(int k=0;k<3;k++)
                 set.insert(sudoku[start_index+3*j][k][i]);
     score = countMissing(set,1,9);
-    //set.erase(set.begin(),set.end());
     return score;
 }
 int scoreBoard(int sudoku[N][3][3])
@@ -358,13 +354,16 @@ int scorer(int sudoku[N][3][3],vector <pair<int,int>> &indexes, int n)
     }
     return score;
 }
-float costFunction(int deltaScore,float T)
+float probFunction(int deltaScore,float T)
+//Change this to define a new cost function
 {
     float prob = 1000/(1+exp(deltaScore/T));
     return prob;
 }
 int permutations(int sudoku[N][3][3],array<vector<pair<int, int>>,9> coords,
         int initialScore,float T,bool &improved)
+//Randomly flips two elements in a block and computes new score.
+//Accepts if score improves, uses probFunction to choose accept/reject if not
 {
     int n = rand() % 9; //choose random block
     random_unique(coords[n].begin(),coords[n].end(),2); //choose two random coordiantes of elements in block
@@ -380,9 +379,9 @@ int permutations(int sudoku[N][3][3],array<vector<pair<int, int>>,9> coords,
     }
     else
     {
-    //if score worsens/same, use cost function prob dist. to choose accept or reject
+    //if score worsens/same, use prob dist function to choose accept or reject.
         improved = false;
-        float prob = costFunction(deltaScore,T);
+        float prob = probFunction(deltaScore,T);
         float r = rand() %1000;
         if(prob>r)
             {
@@ -526,7 +525,6 @@ bool checkValidity(int sudoku[N][3][3])
     }
     return true;
 }
-
 bool preProcess(int problem[N][N],int sudoku[N][3][3],array<vector<pair<int, int>>,9> &coords)
 // Preprocess the problem and check validity
 {
@@ -552,13 +550,16 @@ bool preProcess(int problem[N][N],int sudoku[N][3][3],array<vector<pair<int, int
 
 int main()
 {
+    const clock_t begin_time = clock();
     //preprocess array and check it is a valid problem
     int sudoku[N][3][3];
     array<vector<pair<int, int>>,9> coords;
     bool valid;
 
-    //Input problem to be solved here
-    valid = preProcess(problem4,sudoku,coords);
+    //
+    //Input problem to be solved here:
+    valid = preProcess(problem1,sudoku,coords);
+    //
     if(valid==false)
         return 0;
 
@@ -568,10 +569,7 @@ int main()
     float a = 1e-3;
 
     int score = scoreBoard(sudoku); //board starting score
-    //Run annealing algorithm and time
-    const clock_t begin_time = clock();
+    //Run annealing algorithm and print time taken
     Annealer(sudoku,coords,score,T,endT,a);   
     cout << "Time taken = "<< float( clock () - begin_time ) /  CLOCKS_PER_SEC <<" seconds";
 }
-
-
