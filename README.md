@@ -1,7 +1,7 @@
 ## Simulated-Annealing-Sudoku
 
 # Introduction
-Example of a simulated annealing solver written in c++. 
+Example of a simulated annealing solver written in C++. I used this project as a way of refamiliarising myself with C++ and learning about simulated annealing. For the purpose of solving sudokus better approaches exist, for example backtracking. However, this is a demonstration that even a straightforward heuristic alogrithm like simulated annealing can solve seamingly hard problems. 
 
 # Algorithm Overview
 
@@ -20,5 +20,5 @@ The implementation has been tested on puzzles of varying complexity. It has so f
 
 # Code/algorithm optimisation 
 The most important steps for improving runtime are; selecting the random elements to switch, and computing the new score:  
-To select random elements the main problem is stored as an array for fast access. The coordinates of movable elements are stored as an array of vector pairs. The program can access the set of coordiantes for each block quickly, a fischer yates shuffle is then used to pull two sets of coordiantes from the vector.
-The scoring process was slightly optimised by only computing the score change in the rows/collumns being changed. Further if the two elements were in the same row or collumn that score was not calculated.
+1) To select random elements the main problem is stored as an array for fast access. The coordinates of movable elements are stored as an array of vector pairs. The program can access the set of coordiantes for each block quickly, a fischer yates shuffle is then used to pull two sets of coordiantes from the vector.  
+2) The scoring process was slightly optimised by only computing the score change in the rows/collumns being changed. Further if the two elements were in the same row or collumn that score was not calculated.
