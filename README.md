@@ -5,8 +5,8 @@ Example of a simulated annealing solver written in C++. I used this project as a
 
 # Algorithm Overview
 1) Fill out each sub-square 'block', with random numbers such that each is a subsolution (contains numbers 1-9 only).  
-2) The problem state is scored by counting the number of repeats in each row and each collumn (score=0 iff puzzle is solved).
-begin loop:
+2) The problem state is scored by counting the number of repeats in each row and each collumn (score=0 iff puzzle is solved).  
+Begin loop:
 3) We create a new problem state by randomly selecting a block, and randomly swapping two of the unfixed elements (not clues).   
 4) Score the new state and find the difference with old score;  
      &nbsp; &nbsp;  if the score improves accept the new state.  
